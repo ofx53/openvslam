@@ -2,6 +2,7 @@
 #define OPENVSLAM_FEATURE_ORB_PARAMS_H
 
 #include <yaml-cpp/yaml.h>
+#include <spdlog/spdlog.h>
 
 namespace openvslam {
 namespace feature {

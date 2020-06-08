@@ -85,6 +85,23 @@ bool initializer::initialize(data::frame& curr_frm) {
             create_map_for_stereo(curr_frm);
             break;
         }
+        case camera::setup_type_t::Multicam: {
+            // construct an initializer if not constructed
+            if (state_ == initializer_state_t::NotReady) {
+                create_initializer(curr_frm);
+                return false;
+            }
+
+            // try to initialize
+            if (!try_initialize_for_monocular(curr_frm)) {
+                // failed
+                return false;
+            }
+
+            // create new map if succeeded
+            create_map_for_monocular(curr_frm);
+            break;
+        }
         default: {
             throw std::runtime_error("Undefined camera setup");
         }

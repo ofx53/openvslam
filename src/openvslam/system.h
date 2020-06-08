@@ -113,6 +113,10 @@ public:
     //! (Note: RGB and Depth images must be aligned)
     Mat44_t feed_RGBD_frame(const cv::Mat& rgb_img, const cv::Mat& depthmap, const double timestamp, const cv::Mat& mask = cv::Mat{});
 
+    //! Feed a multicam frames to SLAM system
+    //! (NOTE: distorted images are acceptable if calibrated)
+    Mat44_t feed_multicam_frame(const cv::Mat& img1, const cv::Mat& img2, const double timestamp, const cv::Mat& mask = cv::Mat{});
+
     //-----------------------------------------
     // management for pause
 
@@ -157,6 +161,7 @@ private:
     const std::shared_ptr<config> cfg_;
     //! camera model
     camera::base* camera_ = nullptr;
+    camera::base* camera2_ = nullptr;
 
     //! camera database
     data::camera_database* cam_db_ = nullptr;

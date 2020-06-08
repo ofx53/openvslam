@@ -98,11 +98,11 @@ unsigned int projection::match_current_and_last_frames(data::frame& curr_frm, co
 
     // monocular以外の場合は，current->lastの並進ベクトルのz成分で前進しているか判断しているかを判定する
     // z成分が正に振れている -> 前進している
-    const bool assume_forward = (curr_frm.camera_->setup_type_ == camera::setup_type_t::Monocular)
+    const bool assume_forward = (curr_frm.camera_->setup_type_ == camera::setup_type_t::Monocular || curr_frm.camera_->setup_type_ == camera::setup_type_t::Multicam)
                                     ? false
                                     : trans_lc(2) > curr_frm.camera_->true_baseline_;
     // z成分が負に振れている -> 後退している
-    const bool assume_backward = (curr_frm.camera_->setup_type_ == camera::setup_type_t::Monocular)
+    const bool assume_backward = (curr_frm.camera_->setup_type_ == camera::setup_type_t::Monocular || curr_frm.camera_->setup_type_ == camera::setup_type_t::Multicam)
                                      ? false
                                      : -trans_lc(2) > curr_frm.camera_->true_baseline_;
 

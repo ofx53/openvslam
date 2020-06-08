@@ -1,6 +1,7 @@
 #include "openvslam/feature/orb_params.h"
 
 #include <iostream>
+#include <spdlog/spdlog.h>
 
 namespace openvslam {
 namespace feature {
@@ -11,6 +12,7 @@ orb_params::orb_params(const unsigned int max_num_keypts, const float scale_fact
     : max_num_keypts_(max_num_keypts), scale_factor_(scale_factor), num_levels_(num_levels),
       ini_fast_thr_(ini_fast_thr), min_fast_thr(min_fast_thr),
       mask_rects_(mask_rects) {
+    spdlog::debug("orb_params constructor");
     for (const auto& v : mask_rects_) {
         if (v.size() != 4) {
             throw std::runtime_error("mask rectangle must contain four parameters");

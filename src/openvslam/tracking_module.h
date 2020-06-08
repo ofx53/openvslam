@@ -13,6 +13,8 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/features2d/features2d.hpp>
 
+#include <spdlog/spdlog.h>
+
 namespace openvslam {
 
 class system;
@@ -80,6 +82,11 @@ public:
     //! (Note: RGB and Depth images must be aligned)
     Mat44_t track_RGBD_image(const cv::Mat& img, const cv::Mat& depthmap, const double timestamp, const cv::Mat& mask = cv::Mat{});
 
+    //! Track a multicam frame
+    //! (NOTE: distorted images are acceptable if calibrated)
+    Mat44_t track_multicam_image(const cv::Mat& img1, const cv::Mat& img2, const double timestamp, const cv::Mat& mask = cv::Mat{});
+
+
     //-----------------------------------------
     // management for reset process
 
@@ -109,6 +116,7 @@ public:
 
     //! camera model (equals to cfg_->camera_)
     camera::base* camera_;
+    camera::base* camera2_ = nullptr;
 
     //! latest tracking state
     tracker_state_t tracking_state_ = tracker_state_t::NotInitialized;

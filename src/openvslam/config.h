@@ -12,7 +12,9 @@ class config {
 public:
     //! Constructor
     explicit config(const std::string& config_file_path);
+    explicit config(const std::string& config_file_path1, const std::string& config_file_path2);
     explicit config(const YAML::Node& yaml_node, const std::string& config_file_path = "");
+    explicit config(const YAML::Node& yaml_node, const std::string& config_file_path,const YAML::Node& yaml_node2, const std::string& config_file_path2);
 
     //! Destructor
     ~config();
@@ -21,12 +23,16 @@ public:
 
     //! path to config YAML file
     const std::string config_file_path_;
+    const std::string config_file_path2_;
 
     //! YAML node
     const YAML::Node yaml_node_;
+    const YAML::Node yaml_node2_;
+
 
     //! Camera model
     camera::base* camera_ = nullptr;
+    camera::base* camera2_ = nullptr;
 
     //! ORB feature parameters
     feature::orb_params orb_params_;

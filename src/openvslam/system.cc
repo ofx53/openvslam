@@ -19,7 +19,7 @@
 namespace openvslam {
 
 system::system(const std::shared_ptr<config>& cfg, const std::string& vocab_file_path)
-    : cfg_(cfg), camera_(cfg->camera_) {
+    : cfg_(cfg), camera_(cfg->camera_),camera2_(cfg->camera2_) {
     spdlog::debug("CONSTRUCT: system");
 
     std::cout << R"(  ___               __   _____ _      _   __  __ )" << std::endl;
@@ -268,6 +268,21 @@ Mat44_t system::feed_RGBD_frame(const cv::Mat& rgb_img, const cv::Mat& depthmap,
     check_reset_request();
 
     const Mat44_t cam_pose_cw = tracker_->track_RGBD_image(rgb_img, depthmap, timestamp, mask);
+
+    frame_publisher_->update(tracker_);
+    if (tracker_->tracking_state_ == tracker_state_t::Tracking) {
+        map_publisher_->set_current_cam_pose(cam_pose_cw);
+    }
+
+    return cam_pose_cw;
+}
+
+Mat44_t system::feed_multicam_frame(const cv::Mat& img1, const cv::Mat& img2, const double timestamp, const cv::Mat& mask) {
+    assert(camera_->setup_type_ == camera::setup_type_t::Multicam);
+
+    check_reset_request();
+
+    const Mat44_t cam_pose_cw = tracker_->track_multicam_image(img1, img2, timestamp, mask);
 
     frame_publisher_->update(tracker_);
     if (tracker_->tracking_state_ == tracker_state_t::Tracking) {

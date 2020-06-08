@@ -16,15 +16,16 @@ namespace camera {
 enum class setup_type_t {
     Monocular = 0,
     Stereo = 1,
-    RGBD = 2
+    RGBD = 2,
+    Multicam = 3
 };
 
-const std::array<std::string, 3> setup_type_to_string = {{"Monocular", "Stereo", "RGBD"}};
+const std::array<std::string, 4> setup_type_to_string = {{"Monocular", "Stereo", "RGBD", "Multicam"}};
 
 enum class model_type_t {
     Perspective = 0,
     Fisheye = 1,
-    Equirectangular = 2
+    Equirectangular = 2,
 };
 
 const std::array<std::string, 3> model_type_to_string = {{"Perspective", "Fisheye", "Equirectangular"}};

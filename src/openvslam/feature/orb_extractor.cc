@@ -41,6 +41,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <opencv2/imgproc.hpp>
 #include <opencv2/features2d.hpp>
 
+#include <spdlog/spdlog.h>
+#include <iostream>
 #ifdef USE_SSE_ORB
 #ifdef _MSC_VER
 #include <intrin.h>
@@ -203,6 +205,7 @@ std::vector<float> orb_extractor::get_inv_level_sigma_sq() const {
 }
 
 void orb_extractor::initialize() {
+    spdlog::debug("orb_extractor::initialize");
     // compute scale pyramid information
     calc_scale_factors();
 
@@ -236,6 +239,7 @@ void orb_extractor::initialize() {
         u_max_.at(v) = v0;
         ++v0;
     }
+    std::cout << orb_params_.scale_factor_;
 }
 
 void orb_extractor::calc_scale_factors() {

@@ -75,7 +75,7 @@ unsigned int pose_optimizer::optimize(data::frame& frm) const {
         const auto& undist_keypt = frm.undist_keypts_.at(idx);
         const float x_right = frm.stereo_x_right_.at(idx);
         const float inv_sigma_sq = frm.inv_level_sigma_sq_.at(undist_keypt.octave);
-        const auto sqrt_chi_sq = (frm.camera_->setup_type_ == camera::setup_type_t::Monocular)
+        const auto sqrt_chi_sq = (frm.camera_->setup_type_ == camera::setup_type_t::Monocular || frm.camera_->setup_type_ == camera::setup_type_t::Multicam)
                                      ? sqrt_chi_sq_2D
                                      : sqrt_chi_sq_3D;
         auto pose_opt_edge_wrap = pose_opt_edge_wrapper(&frm, frm_vtx, lm->get_pos_in_world(),

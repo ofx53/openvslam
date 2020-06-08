@@ -90,7 +90,7 @@ data::keyframe* keyframe_inserter::insert_new_keyframe(data::frame& curr_frm) {
     frm_id_of_last_keyfrm_ = curr_frm.id_;
 
     // monocularだったらkeyframeをmapping moduleにqueueして終わり
-    if (setup_type_ == camera::setup_type_t::Monocular) {
+    if (setup_type_ == camera::setup_type_t::Monocular || setup_type_ == camera::setup_type_t::Multicam) {
         queue_keyframe(keyfrm);
         return keyfrm;
     }

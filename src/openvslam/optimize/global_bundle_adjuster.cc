@@ -110,7 +110,7 @@ void global_bundle_adjuster::optimize(const unsigned int lead_keyfrm_id_in_globa
             const auto& undist_keypt = keyfrm->undist_keypts_.at(idx);
             const float x_right = keyfrm->stereo_x_right_.at(idx);
             const float inv_sigma_sq = keyfrm->inv_level_sigma_sq_.at(undist_keypt.octave);
-            const auto sqrt_chi_sq = (keyfrm->camera_->setup_type_ == camera::setup_type_t::Monocular)
+            const auto sqrt_chi_sq = (keyfrm->camera_->setup_type_ == camera::setup_type_t::Monocular || keyfrm->camera_->setup_type_ == camera::setup_type_t::Multicam)
                                          ? sqrt_chi_sq_2D
                                          : sqrt_chi_sq_3D;
             auto reproj_edge_wrap = reproj_edge_wrapper(keyfrm, keyfrm_vtx, lm, lm_vtx,

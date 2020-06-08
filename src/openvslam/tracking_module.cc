@@ -20,14 +20,14 @@ namespace openvslam {
 
 tracking_module::tracking_module(const std::shared_ptr<config>& cfg, system* system, data::map_database* map_db,
                                  data::bow_vocabulary* bow_vocab, data::bow_database* bow_db)
-    : cfg_(cfg), camera_(cfg->camera_), system_(system), map_db_(map_db), bow_vocab_(bow_vocab), bow_db_(bow_db),
+    : cfg_(cfg), camera_(cfg->camera_), camera2_(cfg->camera2_), system_(system), map_db_(map_db), bow_vocab_(bow_vocab), bow_db_(bow_db),
       initializer_(cfg->camera_->setup_type_, map_db, bow_db, cfg->yaml_node_),
       frame_tracker_(camera_, 10), relocalizer_(bow_db_), pose_optimizer_(),
       keyfrm_inserter_(cfg_->camera_->setup_type_, cfg_->true_depth_thr_, map_db, bow_db, 0, cfg_->camera_->fps_) {
     spdlog::debug("CONSTRUCT: tracking_module");
 
     extractor_left_ = new feature::orb_extractor(cfg_->orb_params_);
-    if (camera_->setup_type_ == camera::setup_type_t::Monocular) {
+    if (camera_->setup_type_ == camera::setup_type_t::Monocular || camera_->setup_type_ == camera::setup_type_t::Multicam) {
         ini_extractor_left_ = new feature::orb_extractor(cfg_->orb_params_);
         ini_extractor_left_->set_max_num_keypoints(ini_extractor_left_->get_max_num_keypoints() * 2);
     }
@@ -128,6 +128,28 @@ Mat44_t tracking_module::track_RGBD_image(const cv::Mat& img, const cv::Mat& dep
 
     // create current frame object
     curr_frm_ = data::frame(img_gray_, img_depth, timestamp, extractor_left_, bow_vocab_, camera_, cfg_->true_depth_thr_, mask);
+
+    track();
+
+    const auto end = std::chrono::system_clock::now();
+    elapsed_ms_ = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+
+    return curr_frm_.cam_pose_cw_;
+}
+
+Mat44_t tracking_module::track_multicam_image(const cv::Mat& img1, const cv::Mat& img2, const double timestamp, const cv::Mat& mask) {
+    const auto start = std::chrono::system_clock::now();
+    // color conversion
+    img_gray_ = img1;
+    util::convert_to_grayscale(img_gray_, camera_->color_order_);
+
+    // create current frame object
+    if (tracking_state_ == tracker_state_t::NotInitialized || tracking_state_ == tracker_state_t::Initializing) {
+        curr_frm_ = data::frame(img_gray_, timestamp, ini_extractor_left_, bow_vocab_, camera_, cfg_->true_depth_thr_, mask);
+    }
+    else {
+        curr_frm_ = data::frame(img_gray_, timestamp, extractor_left_, bow_vocab_, camera_, cfg_->true_depth_thr_, mask);
+    }
 
     track();
 

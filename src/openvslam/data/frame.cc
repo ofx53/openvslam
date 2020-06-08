@@ -57,6 +57,7 @@ frame::frame(const cv::Mat& left_img_gray, const cv::Mat& right_img_gray, const 
              const cv::Mat& mask)
     : id_(next_id_++), bow_vocab_(bow_vocab), extractor_(extractor_left), extractor_right_(extractor_right),
       timestamp_(timestamp), camera_(camera), depth_thr_(depth_thr) {
+    spdlog::debug("update_orb_info()2");
     // Get ORB scale
     update_orb_info();
 
@@ -150,7 +151,9 @@ Mat33_t frame::get_rotation_inv() const {
 }
 
 void frame::update_orb_info() {
+    spdlog::debug("u1");
     num_scale_levels_ = extractor_->get_num_scale_levels();
+    spdlog::debug("u2");
     scale_factor_ = extractor_->get_scale_factor();
     log_scale_factor_ = std::log(scale_factor_);
     scale_factors_ = extractor_->get_scale_factors();
