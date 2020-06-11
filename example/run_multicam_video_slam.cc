@@ -11,6 +11,9 @@
 #include <chrono>
 #include <numeric>
 
+#include <fstream>
+#include <string>
+
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/videoio.hpp>
@@ -67,7 +70,6 @@ void multicam_tracking(const std::shared_ptr<openvslam::config>& cfg,
 
             if (!frame1.empty() && !frame2.empty() && (num_frame % frame_skip == 0)) {
                 // input the current frame and estimate the camera pose
-                spdlog::debug("Feeding frame");
                 SLAM.feed_multicam_frame(frame1, frame2, timestamp, mask);
             }
 
@@ -163,6 +165,7 @@ int main(int argc, char* argv[]) {
     auto video_file_path2 = op.add<popl::Value<std::string>>("n", "video2", "video file path");
     auto config_file_path1 = op.add<popl::Value<std::string>>("c", "config", "config file path");
     auto config_file_path2 = op.add<popl::Value<std::string>>("o", "config2", "config file path");
+    auto jak_traj_path = op.add<popl::Value<std::string>>("j", "traj_jak", "jakarto trajectory");
     auto mask_img_path = op.add<popl::Value<std::string>>("", "mask", "mask image path", "");
     auto frame_skip = op.add<popl::Value<unsigned int>>("", "frame-skip", "interval of frame skip", 1);
     auto no_sleep = op.add<popl::Switch>("", "no-sleep", "not wait for next frame in real time");
@@ -204,7 +207,7 @@ int main(int argc, char* argv[]) {
     // load configuration
     std::shared_ptr<openvslam::config> cfg;
     try {
-        cfg = std::make_shared<openvslam::config>(config_file_path1->value(), config_file_path2->value());
+        cfg = std::make_shared<openvslam::config>(config_file_path1->value(), config_file_path2->value(),jak_traj_path->value());
     }
     catch (const std::exception& e) {
         std::cerr << e.what() << std::endl;

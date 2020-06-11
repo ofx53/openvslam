@@ -155,8 +155,9 @@ Mat44_t tracking_module::track_multicam_image(const cv::Mat& img1, const cv::Mat
 
     const auto end = std::chrono::system_clock::now();
     elapsed_ms_ = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-
-    return curr_frm_.cam_pose_cw_;
+    Mat44_t pose_init = cfg_->pose_init_;
+    std::cout << pose_init * curr_frm_.cam_pose_cw_ << std::endl;
+    return pose_init * curr_frm_.cam_pose_cw_;
 }
 
 void tracking_module::reset() {

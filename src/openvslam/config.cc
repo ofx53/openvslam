@@ -3,6 +3,9 @@
 #include "openvslam/camera/fisheye.h"
 #include "openvslam/camera/equirectangular.h"
 
+#include <fstream>
+#include <string>
+
 #include <iostream>
 #include <memory>
 
@@ -13,8 +16,8 @@ namespace openvslam {
 config::config(const std::string& config_file_path)
     : config(YAML::LoadFile(config_file_path), config_file_path) {}
 
-config::config(const std::string& config_file_path1,const std::string& config_file_path2)
-    : config(YAML::LoadFile(config_file_path1), config_file_path1, YAML::LoadFile(config_file_path2), config_file_path2) {}
+config::config(const std::string& config_file_path1,const std::string& config_file_path2, const std::string& jak_traj_path)
+    : config(YAML::LoadFile(config_file_path1), config_file_path1, YAML::LoadFile(config_file_path2), config_file_path2, jak_traj_path) {}
 
 
 config::config(const YAML::Node& yaml_node, const std::string& config_file_path)
@@ -104,8 +107,8 @@ config::config(const YAML::Node& yaml_node, const std::string& config_file_path)
     }
 }
 
-config::config(const YAML::Node& yaml_node1, const std::string& config_file_path1, const YAML::Node& yaml_node2, const std::string& config_file_path2)
-    : config_file_path_(config_file_path1), yaml_node_(yaml_node1),config_file_path2_(config_file_path2), yaml_node2_(yaml_node2) {
+config::config(const YAML::Node& yaml_node1, const std::string& config_file_path1, const YAML::Node& yaml_node2, const std::string& config_file_path2, const std::string& jak_traj_path)
+    : config_file_path_(config_file_path1), config_file_path2_(config_file_path2), yaml_node_(yaml_node1), yaml_node2_(yaml_node2) {
     spdlog::debug("CONSTRUCT: config");
 
     spdlog::info("config file loaded: {}", config_file_path_);
@@ -145,6 +148,12 @@ config::config(const YAML::Node& yaml_node1, const std::string& config_file_path
     // Make sure the setup is multicam
     assert(camera_->setup_type_ = camera::setup_type_t::Multicam);
 
+
+    double  x_gps, y_gps, z_gps;
+    std::ifstream trajectoire(jak_traj_path);
+    trajectoire.ignore(std::numeric_limits<std::streamsize>::max(),'\n');
+    trajectoire >> x_gps >> y_gps >> z_gps;
+    pose_init_ << 1,0,0,x_gps,0,1,0,y_gps,0,0,1,z_gps,0,0,0,1;
     //=====================//
     // Load ORB Parameters //
     //=====================//
